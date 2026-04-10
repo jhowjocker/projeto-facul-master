@@ -1,0 +1,70 @@
+.agendamento {
+  padding: 80px 20px;
+  min-height: auto; /* cria espaço vertical */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centraliza horizontal */
+  /* justify-content: flex-start; centraliza vertical */
+}
+
+.agendamento-bg {
+  padding: 0px;
+  display: flex;
+  justify-content: center;
+}
+
+.agendamento {
+  background: #1076ac;
+  padding: 150px 40px;
+  border-radius: 0px 0px 5px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: fit-content; /* faz ficar do tamanho do conteúdo */
+  margin-bottom: 0px;
+}
+
+.agendamento form {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto; /* garante centralização */
+}
+
+.agendamento h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.agendamento label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.agendamento input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.agendamento button {
+  width: 100%;
+  padding: 12px;
+  background: #1076ac;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.agendamento button:hover {
+  background: #0d5e88;
+}

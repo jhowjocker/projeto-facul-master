@@ -1,0 +1,55 @@
+.marcacao-lista {
+  margin-top: 7.5rem;
+  margin-bottom: 7.5rem;
+}
+
+.marcacao-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+/* LISTA */
+.steps {
+  list-style: none; /* remove bolinhas */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+/* CARD */
+.step-card {
+  background: #fff;
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  transition: 0.3s;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  min-height: 220px;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.icon {
+  margin-bottom: 1.5rem;
+}
+
+.icon img {
+  width: 72px;
+}
+
+.step-card h3 {
+  font-size: 1.2rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}

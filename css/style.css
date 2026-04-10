@@ -1,0 +1,22 @@
+@import "./global/global.css";
+@import "./utilidades/tipografia.css";
+@import "./utilidades/cores.css";
+@import "./utilidades/animacao.css";
+
+@import "./global/header.css";
+@import "./global/footer.css";
+
+/* Utilidades */
+@import "./utilidades/componentes.css";
+@import "./utilidades/formulario.css";
+
+/* Home */
+@import "./home/introducao.css";
+@import "./home/especialidades.css";
+
+/* Marcacao-cards */
+@import "./Marcacao-cards/marcacao-cards.css";
+
+/* Cadastro */
+@import "./cadastro/cadastro.css";
+@import "./cadastro/agendaento.css";

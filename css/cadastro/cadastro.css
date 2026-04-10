@@ -1,0 +1,41 @@
+#cadastro {
+  background: linear-gradient(var(--cor-12) 600px, var(--cor-1) 0px);
+}
+
+.cadastro {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding-bottom: 120px;
+  justify-content: center;
+}
+
+.cadastro h2 {
+  text-transform: uppercase;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cadastro h2::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 8px;
+  background-color: var(--cor-p1);
+  position: absolute;
+  left: -12px;
+}
+
+.cadastro-dados {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px;
+  border-radius: 5px 5px 5px 5px;
+  background: var(--cor-0);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+#cadastro .titulo {
+  text-align: center;
+}

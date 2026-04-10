@@ -1,0 +1,5 @@
+Flask
+supabase
+python-dotenv
+validate-docbr  # validação de CPF
+flask-cors      # se o front estiver em outro domínio/porta

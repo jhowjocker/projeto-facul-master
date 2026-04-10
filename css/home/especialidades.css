@@ -1,0 +1,65 @@
+.especialidades-bg {
+  background-color: var(--cor-12);
+  box-shadow:
+    inset 0 80px var(--cor-1),
+    inset 0 -80px var(--cor-1);
+}
+
+.especialidades {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.especialidades-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left;
+}
+
+.especialidades-conteudo {
+  padding-top: 160px;
+  padding-bottom: 160px;
+}
+
+.especialidades-conteudo > span {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.especialidades-conteudo h2 {
+  margin-bottom: 32px;
+}
+
+.especialidades-conteudo > p {
+  margin-bottom: 20px;
+}
+
+/* .especialidades a {
+  margin-bottom: 80px;
+} */
+
+/* .beneficios {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+} */
+
+.especialidades-vantagens {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+  margin-top: 3rem;
+  margin-bottom: 5rem;
+}
+
+.especialidadesvantagens h3 {
+  margin-bottom: 8px;
+  width: max-content;
+}
+
+.especialidades-vantagens img {
+  width: 64px;
+  margin-bottom: 1.5rem;
+}
