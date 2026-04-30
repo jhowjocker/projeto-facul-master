@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Médico | consulta.com</title>
+  <link rel="preload" href="./css/style.css" as="style">
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    /* Estilos adicionais para a área médica */
+    .medico-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f7f7f7;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #ffbb00;
+      color: #332200;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #e4a30b;
+    }
+    .alert {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      display: none;
+    }
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    #dashboard {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header-bg">
+    <div class="header container">
+      <a href="./">
+        <img src="./img/Consulta.com.svg" alt="consulta.com">
+      </a>
+      <nav aria-label="primaria">
+        <ul class="header-menu font-1-m cor-0">
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./cadastro.html">Cadastro</a></li>
+          <li><a href="./agendamento.html">Agendamento</a></li>
+          <li><a href="./medico.html" class="cor-p1">Login-Médico</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="titulo-bg">
+      <div class="titulo container">
+        <p class="font-2-l-b cor-4">Acesso restrito</p>
+        <h1 class="font-1-xxl cor-0">Área do Médico<span class="cor-p1">.</span></h1>
+      </div>
+    </div>
+
+    <div class="medico-container">
+      <!-- Formulário de login -->
+      <div id="login-area">
+        <h2>Login</h2>
+        <div id="login-alert" class="alert"></div>
+        <div class="form-group">
+          <label for="username">Usuário</label>
+          <input type="text" id="username" placeholder="dr_joao">
+        </div>
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input type="password" id="password">
+        </div>
+        <button id="login-btn">Entrar</button>
+      </div>
+
+      <!-- Painel do médico (inicialmente oculto) -->
+      <div id="dashboard">
+        <h2>Enviar Exame</h2>
+        <div id="dashboard-alert" class="alert"></div>
+        <div class="form-group">
+          <label for="email-paciente">E-mail do Paciente</label>
+          <select id="email-paciente">
+            <option value="">Carregando...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="arquivo">Arquivo (PNG ou JPG)</label>
+          <input type="file" id="arquivo" accept="image/png, image/jpeg">
+        </div>
+        <button id="enviar-btn">Enviar Exame</button>
+        <button id="logout-btn" style="background: #ccc; margin-top: 10px;">Sair</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-bg">
+    <div class="footer container">
+      <img src="./img/Consulta.com.svg" width="250" height="32" alt="consulta.com">
+      <div class="footer-contato">
+        <h3 class="font-2-l-b cor-0">Contato</h3>
+        <ul class="font-2-m cor-5">
+          <li><a href="tel:+552199999999">+55 21 9999-9999</a></li>
+          <li><a href="mailto:contato@consultacom">contato@consulta.com</a></li>
+          <li>Avenida Ali Perto, 42 - Algum Lugar</li>
+          <li>Cidade - EST</li>
+        </ul>
+        <div class="footer-redes">
+          <a href="./"><img src="./img/redes/instagram.svg" width="32" height="32" alt="Instagram"></a>
+          <a href="./"><img src="./img/redes/facebook.svg" width="32" height="32" alt="Facebook"></a>
+          <a href="./"><img src="./img/redes/youtube.svg" width="32" height="32" alt="Youtube"></a>
+        </div>
+      </div>
+      <div class="footer-informacoes">
+        <h3 class="font-2-l-b cor-0">Informações</h3>
+        <nav>
+          <ul class="font-1-m cor-5">
+            <li><a href="#consulta">Consultas</a></li>
+            <li><a href="#contato.html">Contato</a></li>
+            <li><a href="#termos.html">Termos e Condições</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="footer-copy font-2-m cor-6">Consulta.com © Alguns direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE_URL = ''; 
+
+    // Elementos
+    const loginArea = document.getElementById('login-area');
+    const dashboard = document.getElementById('dashboard');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const enviarBtn = document.getElementById('enviar-btn');
+    const emailSelect = document.getElementById('email-paciente');
+    const loginAlert = document.getElementById('login-alert');
+    const dashboardAlert = document.getElementById('dashboard-alert');
+
+    // Função auxiliar para mostrar alertas
+    function showAlert(element, message, type) {
+      element.textContent = message;
+      element.className = `alert alert-${type}`;
+      element.style.display = 'block';
+      setTimeout(() => {
+        element.style.display = 'none';
+      }, 5000);
+    }
+
+    // Login
+    loginBtn.addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!username || !password) {
+        showAlert(loginAlert, 'Preencha usuário e senha', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/medicos/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // necessário para enviar cookies de sessão
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Login bem-sucedido: esconde login, mostra dashboard
+          loginArea.style.display = 'none';
+          dashboard.style.display = 'block';
+          // Carrega lista de e-mails
+          carregarEmails();
+        } else {
+          showAlert(loginAlert, result.erro || 'Erro no login', 'error');
+        }
+      } catch (error) {
+        showAlert(loginAlert, 'Erro de conexão com o servidor', 'error');
+      }
+    });
+
+    // Carregar lista de e-mails dos pacientes
+    async function carregarEmails() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/pacientes/emails`, {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Não autorizado');
+        const emails = await response.json();
+        emailSelect.innerHTML = '<option value="">Selecione um e-mail</option>' +
+          emails.map(email => `<option value="${email}">${email}</option>`).join('');
+      } catch (error) {
+        showAlert(dashboardAlert, 'Erro ao carregar lista de pacientes', 'error');
+      }
+    }
+
+    // Enviar exame
+    enviarBtn.addEventListener('click', async () => {
+      const email = emailSelect.value;
+      const arquivo = document.getElementById('arquivo').files[0];
+
+      if (!email) {
+        showAlert(dashboardAlert, 'Selecione um e-mail', 'error');
+        return;
+      }
+      if (!arquivo) {
+        showAlert(dashboardAlert, 'Selecione um arquivo', 'error');
+        return;
+      }
+
+      // Confirmação
+      const confirmado = confirm('Tem certeza que deseja enviar este arquivo? Dados médicos são sigilosos e devem ser tratados com responsabilidade.');
+      if (!confirmado) return;
+
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('arquivo', arquivo);
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/enviar-exame`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showAlert(dashboardAlert, 'E-mail enviado com sucesso!', 'success');
+          document.getElementById('arquivo').value = ''; // limpa campo
+        } else {
+          showAlert(dashboardAlert, result.erro || 'Erro ao enviar', 'error');
+        }
+      } catch (error) {
+        showAlert(dashboardAlert, 'Erro de conexão com o servidor', 'error');
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await fetch(`${API_BASE_URL}/api/medicos/logout`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        // Volta para a tela de login
+        loginArea.style.display = 'block';
+        dashboard.style.display = 'none';
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+      } catch (error) {
+        console.error('Erro no logout:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>

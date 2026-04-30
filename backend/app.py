@@ -3,23 +3,52 @@ import re
 import threading
 import time
 from datetime import datetime
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session  
 from flask_cors import CORS
 from supabase import create_client, Client
 from validate_docbr import CPF
 from dotenv import load_dotenv
+import bcrypt                                  
+import smtplib                                  
+from email.mime.multipart import MIMEMultipart 
+from email.mime.text import MIMEText          
+from email.mime.base import MIMEBase          
+from email import encoders 
 import webbrowser
 
 load_dotenv()
 
-app = Flask(__name__, static_folder=None)  # Desabilita o static_folder padrão
-CORS(app)
+# Define o diretório base do projeto (um nível acima da pasta /backend)
+# Isso garante que o Flask encontre os arquivos estáticos independente de onde o script é iniciado.
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-supabase: Client = create_client(
-    os.getenv('SUPABASE_URL'),
-    os.getenv('SUPABASE_KEY')
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    print("ERRO: SUPABASE_URL ou SUPABASE_KEY não encontradas no arquivo .env")
+    # Não encerra o app aqui para permitir que o Flask suba e mostre erros nas rotas
+
+app = Flask(__name__, static_folder=None)  
+app.secret_key = os.getenv('SECRET_KEY', 'dev-key-123')  
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "*"}}) # Temporariamente mais permissivo para debug
+
+app.config.update(
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=False,   # Como é localhost (HTTP), não usamos HTTPS
+    SESSION_COOKIE_HTTPONLY=True
 )
 
+supabase: Client = None
+if SUPABASE_URL and SUPABASE_KEY:
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+else:
+    print("AVISO: Cliente Supabase não inicializado.")
+
+SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
+SMTP_USER = os.getenv('SMTP_USER')
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
 cpf_validator = CPF()
 
 # ==================== Funções de validação ====================
@@ -238,12 +267,106 @@ def verificar_disponibilidade():
         'disponivel': disponivel
     })
 
+# ==================== Novas rotas para área médica ====================
+
+@app.route('/api/medicos/login', methods=['POST'])
+def medico_login():
+    """Login do médico - valida usuário e senha"""
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'erro': 'Usuário e senha são obrigatórios'}), 400
+
+    # Buscar médico no Supabase
+    response = supabase.table('medicos').select('*').eq('username', username).execute()
+    if not response.data:
+        return jsonify({'erro': 'Usuário não encontrado'}), 401
+
+    medico = response.data[0]
+    password_hash = medico['password_hash'].encode('utf-8')
+
+    if bcrypt.checkpw(password.encode('utf-8'), password_hash):
+        session['medico_logado'] = username
+        print("Sessão definida para:", session['medico_logado'])   # <-- adicione
+        return jsonify({'success': True, 'message': 'Login realizado com sucesso'})
+    else:
+        return jsonify({'erro': 'Senha incorreta'}), 401
+
+
+@app.route('/api/medicos/logout', methods=['POST'])
+def medico_logout():
+    """Logout do médico"""
+    session.pop('medico_logado', None)
+    return jsonify({'success': True})
+
+
+@app.route('/api/pacientes/emails', methods=['GET'])
+def listar_emails_pacientes():
+    """Retorna lista de e-mails dos pacientes (protegido)"""
+    if not session.get('medico_logado'):
+        return jsonify({'erro': 'Não autorizado'}), 401
+
+    response = supabase.table('pacientes').select('email').execute()
+    emails = [row['email'] for row in response.data]
+    return jsonify(emails)
+
+
+@app.route('/api/enviar-exame', methods=['POST'])
+def enviar_exame():
+    """Envia arquivo por e-mail (protegido)"""
+    if not session.get('medico_logado'):
+        return jsonify({'erro': 'Não autorizado'}), 401
+
+    # Obtém dados do formulário multipart
+    email_paciente = request.form.get('email')
+    arquivo = request.files.get('arquivo')
+
+    if not email_paciente or not arquivo:
+        return jsonify({'erro': 'E-mail e arquivo são obrigatórios'}), 400
+
+    # Valida extensão
+    if not arquivo.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+        return jsonify({'erro': 'Formato de arquivo inválido. Use PNG ou JPG.'}), 400
+
+    try:
+        # Configuração do e-mail
+        msg = MIMEMultipart()
+        msg['From'] = SMTP_USER
+        msg['To'] = email_paciente
+        msg['Subject'] = 'Resultado do seu exame'
+
+        corpo = "Prezado paciente, segue em anexo o resultado do seu exame."
+        msg.attach(MIMEText(corpo, 'plain'))
+
+        # Anexa o arquivo
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(arquivo.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', f'attachment; filename="{arquivo.filename}"')
+        msg.attach(part)
+
+        # Envia via SMTP
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+
+        return jsonify({'success': True, 'message': 'E-mail enviado com sucesso'})
+    except Exception as e:
+        return jsonify({'erro': f'Falha ao enviar e-mail: {str(e)}'}), 500
+
 # ==================== Rotas para servir arquivos estáticos e HTML ====================
 
 @app.route('/')
 def serve_index():
     """Serve a página inicial index.html"""
-    return send_from_directory(os.getcwd(), 'index.html')
+    if os.path.exists(os.path.join(BASE_DIR, 'index.html')):
+        return send_from_directory(BASE_DIR, 'index.html')
+    else:
+        print(f"ERRO: index.html não encontrado em {BASE_DIR}")
+        return jsonify({'erro': f'Arquivo index.html não encontrado na raiz do projeto ({BASE_DIR})'}), 404
 
 @app.route('/<path:filename>')
 def serve_static_or_html(filename):
@@ -256,22 +379,20 @@ def serve_static_or_html(filename):
         return jsonify({'erro': 'Rota não encontrada'}), 404
 
     # Caminho completo para o arquivo solicitado
-    filepath = os.path.join(os.getcwd(), filename)
+    filepath = os.path.join(BASE_DIR, filename)
 
     # Se for um diretório, tenta servir um index.html dentro dele (opcional)
     if os.path.isdir(filepath):
         index_inside = os.path.join(filepath, 'index.html')
         if os.path.isfile(index_inside):
-            return send_from_directory(filepath, 'index.html')
+            return send_from_directory(directory=filepath, path='index.html')
         # Se não houver index, retorna 404
         return jsonify({'erro': 'Arquivo não encontrado'}), 404
 
     # Se for um arquivo, tenta servir
     if os.path.isfile(filepath):
         # Extrai o diretório e o nome do arquivo
-        directory = os.path.dirname(filepath)
-        basename = os.path.basename(filepath)
-        return send_from_directory(directory, basename)
+        return send_from_directory(BASE_DIR, filename)
 
     # Se não encontrou, retorna 404
     return jsonify({'erro': 'Arquivo não encontrado'}), 404

@@ -25,7 +25,7 @@ Para facilitar a execução pela nossa equipe, criamos um script de automação 
 1.  Certifique-se de ter o Python e o Google Chrome instalados.
 2.  Instale as dependências:
     ```bash
-    pip install -r requirements.txt
+    pip install robotframework-seleniumlibrary>=6.0.0 robotframework-faker requests robotframework-requests
     ```
 3.  Execute o arquivo `.bat` na raiz do projeto:
     ```bash

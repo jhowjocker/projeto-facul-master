@@ -15,7 +15,7 @@ Abrir Sessao Do Sistemas
         Iniciando serviços
     END
     Open Browser                ${URL}    ${BROWSER}    options=add_argument("--log-level=3")
-    Minimize Browser Window
+    #Minimize Browser Window
     Maximize Browser Window
     Execute JavaScript         window.focus();
     Sleep                       5s
